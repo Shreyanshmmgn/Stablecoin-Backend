@@ -21,6 +21,6 @@ app.use(cors());
 const routerPath = require("./Routes/router");
 app.use(("/", routerPath));
 
-app.listen(process.env.PORT || 5000, () =>
-  console.log(" ------------ ------------1.  Server is running at port : 5000")
+app.listen(process.env.PORT || 5001, () =>
+  console.log(" ------------ ------------1.  Server is running at port : 5001")
 );
