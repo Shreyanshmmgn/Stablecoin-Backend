@@ -12,6 +12,7 @@ exports.login = (req, res, next) => {
             message: "User is registered",
             user: user,
             success: true,
+            id: user._id,
           });
         } else {
           res.status(200).json({

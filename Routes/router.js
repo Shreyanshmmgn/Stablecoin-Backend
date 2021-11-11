@@ -17,10 +17,15 @@ const { login } = require("./login");
 
 router.post("/login", login);
 
-//* ------------ Transaction Route ------------
-const { transaction } = require("./transaction");
+//* ------------Set Transaction Route ------------
+const { setTransaction } = require("./transaction");
 
-router.post("/transaction", transaction);
+router.post("/transaction", setTransaction);
+
+//* ------------Get Transaction Route ------------
+const { getTransaction } = require("./getTransaction");
+
+router.get("/getTransaction", getTransaction);
 
 // //* ------------ Testing Route ------------
 // require("../Test/db");

@@ -23,6 +23,7 @@ const createTransaction = function (UserId, Transaction) {
           transaction_id: { type: String },
           currency: { type: String, default: "USDT" },
           state: { type: String },
+          walletAddress: { type: String },
         },
       },
     },

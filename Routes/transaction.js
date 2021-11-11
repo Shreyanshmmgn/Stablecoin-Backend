@@ -1,22 +1,47 @@
 const User = require("../Models/userDetails");
 const fetch = require("node-fetch");
 
-exports.transaction = (req, res, next) => {
+const createTransaction = function (UserId, Transaction) {
+  console.log("\n>> Add Transaction:\n", Transaction, UserId);
+  User.findByIdAndUpdate(
+    UserId,
+    {
+      $push: {
+        transactionData: {
+          createdAt: new Date().toString(),
+          items: Transaction.items,
+          totalAmount: Transaction.totalAmount,
+          paidAmount: Transaction.paidAmount,
+          transaction_id: Transaction._id,
+          currency: Transaction.currency,
+          state: Transaction.state,
+          userWalletAddress: Transaction.userWalletAddress,
+        },
+      },
+    },
+    { new: true, useFindAndModify: false }
+  ).catch((err) => {
+    console.log(err);
+  });
+};
+//*--------------------------------------------------------------------------------------------*
+
+exports.setTransaction = (req, res, next) => {
   {
     let interval;
-    const { invoiceData, invoiceId } = req.body;
-    console.log("ivnoice data : ", invoiceData);
+    const { userId, invoiceId } = req.body;
     let url = "http://3.108.190.137:8000/api/v1/invoice/" + invoiceId;
 
+    //*--------------------------------------------------------------------------------------------*
     const checkStausOfPament = (url) => {
       fetch(url, {
         method: "GET",
       })
         .then(async (data) => {
           let invoiceData = await data.json();
-          console.log(invoiceData);
           if (invoiceData.state == "paid") {
             clearInterval(interval);
+            createTransaction(userId, invoiceData);
             console.log("Payment Success");
             res.status(200).json({
               message: "Payment Sucessfull",
@@ -27,39 +52,21 @@ exports.transaction = (req, res, next) => {
         })
         .catch((e) => {
           clearInterval(interval);
+          console.log(e);
+          res.status(400).json({ message: "Payment Failed" });
         });
-
-      setTimeout(() => {
-        clearInterval(interval);
-        res.status(400).json({ message: "Payment Failed" });
-      }, 600000); // 10 minutes
     };
+    //*--------------------------------------------------------------------------------------------*
 
     interval = setInterval(() => {
       checkStausOfPament(url);
     }, 5000);
+
+    setTimeout(() => {
+      clearInterval(interval);
+    }, 600000); // 10 minutes
   }
 };
-// {
-//   invoiceData: {
-//     currency: 'USDT',
-//     items: [ [Object], [Object] ],
-//     totalAmount: 2,
-//     paidAmount: 0,
-//     expires: 1636571800205,
-//     created: 1636485400205,
-//     wallet: {
-//       _id: 'e15fea9f-decc-4f81-ac9e-ea4f8d63653b',
-//       address: '0x885E63F6d3F42fF9FCD43D09884AA4393dAd4359',
-//       key: '0x8ce3520064341d9e0097cd6671a42d0cd1d4a67f83583dfbf6eddc246eddc24709788e9',
-//       created: 1636485400240
-//     },
-//     state: 'pending',
-//     _id: '30f82758-82e8-44a0-99ff-108c8fa3b096',
-//     _rev: '1-ea4ecfef7f449ecaa63b55caa2f5940f'
-//   },
-//   invoiceId: '30f82758-82e8-44a0-99ff-108c8fa3b096'
-// }
 
 //---------------------------
 // let data = await res.json();
