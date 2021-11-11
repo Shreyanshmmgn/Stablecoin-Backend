@@ -2,7 +2,7 @@ const User = require("../Models/userDetails");
 const fetch = require("node-fetch");
 
 const createTransaction = function (UserId, Transaction) {
-  console.log("\n>> Add Transaction:\n", Transaction, UserId);
+  console.log("\n>> Add Transaction:\n", Transaction, " UserId", UserId);
   User.findByIdAndUpdate(
     UserId,
     {
@@ -31,7 +31,7 @@ exports.setTransaction = (req, res, next) => {
     let interval;
     const { userId, invoiceId } = req.body;
     let url = "http://3.108.190.137:8000/api/v1/invoice/" + invoiceId;
-
+    console.log("\n>> Set Transaction:\n");
     //*--------------------------------------------------------------------------------------------*
     const checkStausOfPament = (url) => {
       fetch(url, {

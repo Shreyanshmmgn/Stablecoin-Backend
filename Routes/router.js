@@ -25,7 +25,7 @@ router.post("/transaction", setTransaction);
 //* ------------Get Transaction Route ------------
 const { getTransaction } = require("./getTransaction");
 
-router.get("/getTransaction", getTransaction);
+router.post("/getTransaction", getTransaction);
 
 // //* ------------ Testing Route ------------
 // require("../Test/db");
