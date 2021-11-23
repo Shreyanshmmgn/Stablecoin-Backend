@@ -1,23 +1,61 @@
 const User = require("../Models/userDetails");
 const fetch = require("node-fetch");
 
-exports.transaction = (req, res, next) => {
+const createTransaction = function (UserId, Transaction, blockHash) {
+  console.log("\n>> Add Transaction:\n", Transaction, " UserId", UserId);
+  User.findByIdAndUpdate(
+    UserId,
+    {
+      $push: {
+        transactionData: {
+          createdAt: new Date().toString(),
+          items: Transaction.items,
+          totalAmount: Transaction.totalAmount,
+          paidAmount: Transaction.paidAmount,
+          blockHash: blockHash,
+          currency: Transaction.currency,
+          state: Transaction.state,
+          expires: Transaction.expires,
+          created: Transaction.created,
+          wallet: {
+            _id: Transaction.wallet._id,
+            address: Transaction.wa,
+            key: Transaction.wallet.key,
+            created: Transaction.wallet.created,
+          },
+          state: Transaction.state,
+          confirmBlock: Transaction.confirmBlock,
+          _id: Transaction._id,
+          _rev: Transaction._rev,
+          userWalletAddress: Transaction.userWalletAddress,
+        },
+      },
+    },
+    { new: true, useFindAndModify: false }
+  ).catch((err) => {
+    console.log(err);
+  });
+};
+
+//*--------------------------------------------------------------------------------------------*
+
+exports.setTransaction = (req, res) => {
   {
     let interval;
-    const { invoiceData, invoiceId } = req.body;
-    console.log("ivnoice data : ", invoiceData);
+    const { userId, invoiceId, blockHash } = req.body;
     let url = "http://3.108.190.137:8000/api/v1/invoice/" + invoiceId;
-
+    console.log("\n>> Set Transaction:\n");
+    //*--------------------------------------------------------------------------------------------*
     const checkStausOfPament = (url) => {
       fetch(url, {
         method: "GET",
       })
         .then(async (data) => {
           let invoiceData = await data.json();
-          console.log(invoiceData);
           if (invoiceData.state == "paid") {
             clearInterval(interval);
-            console.log("Payment Success");
+            createTransaction(userId, invoiceData, blockHash);
+            console.log("ment Success");
             res.status(200).json({
               message: "Payment Sucessfull",
               status: "paid",
@@ -27,65 +65,20 @@ exports.transaction = (req, res, next) => {
         })
         .catch((e) => {
           clearInterval(interval);
+          console.log(e);
+          res.status(400).json({ message: "Payment Failed" });
         });
-
-      setTimeout(() => {
-        clearInterval(interval);
-        res.status(400).json({ message: "Payment Failed" });
-      }, 600000); // 10 minutes
     };
+    //*--------------------------------------------------------------------------------------------*
 
     interval = setInterval(() => {
       checkStausOfPament(url);
     }, 5000);
+
+    setTimeout(() => {
+      clearInterval(interval);
+    }, 600000); // 10 minutes
   }
 };
-// {
-//   invoiceData: {
-//     currency: 'USDT',
-//     items: [ [Object], [Object] ],
-//     totalAmount: 2,
-//     paidAmount: 0,
-//     expires: 1636571800205,
-//     created: 1636485400205,
-//     wallet: {
-//       _id: 'e15fea9f-decc-4f81-ac9e-ea4f8d63653b',
-//       address: '0x885E63F6d3F42fF9FCD43D09884AA4393dAd4359',
-//       key: '0x8ce3520064341d9e0097cd6671a42d0cd1d4a67f83583dfbf6eddc246eddc24709788e9',
-//       created: 1636485400240
-//     },
-//     state: 'pending',
-//     _id: '30f82758-82e8-44a0-99ff-108c8fa3b096',
-//     _rev: '1-ea4ecfef7f449ecaa63b55caa2f5940f'
-//   },
-//   invoiceId: '30f82758-82e8-44a0-99ff-108c8fa3b096'
-// }
 
 //---------------------------
-// let data = await res.json();
-// console.log(data);
-// let user = await User.findOne({
-//   email: data.email,
-// });
-// console.log(user);
-// if (user) {
-//   let newUser = await User.findOneAndUpdate(
-//     { email: data.email },
-//     {
-//       $push: {
-//         transactions: {
-//           invoiceId: invoiceId,
-//           invoiceData: invoiceData,
-//         },
-//       },
-//     }
-//   );
-//   console.log(newUser);
-//   res.status(200).json({
-//     message: "Transaction Successful",
-//   });
-// } else {
-//   res.status(404).json({
-//     message: "User not found",
-//   });
-// }
