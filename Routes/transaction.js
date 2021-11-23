@@ -8,15 +8,15 @@ const createTransaction = function (UserId, Transaction, blockHash) {
     {
       $push: {
         transactionData: {
-          createdAt: new Date().toString(),
-          items: Transaction.items,
-          totalAmount: Transaction.totalAmount,
-          paidAmount: Transaction.paidAmount,
+          createdAt: new Date().toString(),   //
+          items: Transaction.items,    //
+          totalAmount: Transaction.totalAmount,     //
+          paidAmount: Transaction.paidAmount,    //
           blockHash: blockHash,
-          currency: Transaction.currency,
-          state: Transaction.state,
+          currency: Transaction.currency,    //
+          state: Transaction.state,    //
           expires: Transaction.expires,
-          created: Transaction.created,
+          created: Transaction.created,    //
           wallet: {
             _id: Transaction.wallet._id,
             address: Transaction.wa,
