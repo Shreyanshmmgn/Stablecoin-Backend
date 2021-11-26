@@ -26,7 +26,10 @@ router.post("/transaction", setTransaction);
 const { getTransaction } = require("./getTransaction");
 
 router.post("/getTransaction", getTransaction);
+//* ------------Get Transaction Route ------------
+const { getPortfolioData } = require("./getPortfolio");
 
+router.post("/getPortfolioData", getPortfolioData);
 // //* ------------ Testing Route ------------
 // require("../Test/db");
 module.exports = router;

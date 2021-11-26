@@ -26,6 +26,7 @@ const userData = new schema({
   },
 
   transactionData: [],
+  portfolioData: [],
 });
 // Document
 
