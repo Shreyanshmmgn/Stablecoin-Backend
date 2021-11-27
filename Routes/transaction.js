@@ -55,39 +55,43 @@ const addToPortfolio = async (UserId, Transaction) => {
     console.log(err);
   });
 };
-const createTransaction = function (UserId, Transaction, blockHash) {
-  // User.findByIdAndUpdate(
-  //   UserId,
-  //   {
-  //     $push: {
-  //       transcationData: {
-  //         createdAt: new Date().toString(),
-  //         items: Transaction.items,
-  //         totalAmount: Transaction.totalAmount,
-  //         paidAmount: Transaction.paidAmount,
-  //         blockHash: blockHash,
-  //         currency: Transaction.currency,
-  //         state: Transaction.state,
-  //         expires: Transaction.expires,
-  //         created: Transaction.created,
-  //         wallet: {
-  //           _id: Transaction.wallet._id,
-  //           address: Transaction.address,
-  //           key: Transaction.wallet.key,
-  //           created: Transaction.wallet.created,
-  //         },
-  //         state: Transaction.state,
-  //         confirmBlock: Transaction.confirmBlock,
-  //         _id: Transaction._id,
-  //         _rev: Transaction._rev,
-  //         userWalletAddress: Transaction.userWalletAddress,
-  //       },
-  //     },
-  //   },
-  //   { new: true, useFindAndModify: false }
-  // ).catch((err) => {
-  //   console.log(err);
-  // });
+const createTransaction = async (UserId, Transaction, blockHash) => {
+  await User.findByIdAndUpdate(
+    UserId,
+    {
+      $push: {
+        transactionData: {
+          createdAt: new Date().toString(),
+          items: Transaction.items,
+          totalAmount: Transaction.totalAmount,
+          paidAmount: Transaction.paidAmount,
+          blockHash: blockHash,
+          currency: Transaction.currency,
+          state: Transaction.state,
+          expires: Transaction.expires,
+          created: Transaction.created,
+          wallet: {
+            _id: Transaction.wallet._id,
+            address: Transaction.address,
+            key: Transaction.wallet.key,
+            created: Transaction.wallet.created,
+          },
+          state: Transaction.state,
+          confirmBlock: Transaction.confirmBlock,
+          _id: Transaction._id,
+          _rev: Transaction._rev,
+          userWalletAddress: Transaction.userWalletAddress,
+        },
+      },
+    },
+    { new: true, useFindAndModify: false }
+  )
+    .then((data) => {
+      console.log("saved transaction : ", data);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
   addToPortfolio(UserId, Transaction);
 };
 
