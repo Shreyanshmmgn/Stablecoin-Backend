@@ -4,7 +4,6 @@ const fetch = require("node-fetch");
 const addToPortfolio = async (UserId, Transaction) => {
   let currentPortfolioItems = Transaction.items[0]; //This is an object of items
   let portfolioData;
-  currentPortfolioItems.quantity = 1;
 
   let userData = await User.findById(UserId).catch((err) => {
     console.log(err);
@@ -16,31 +15,24 @@ const addToPortfolio = async (UserId, Transaction) => {
     $set: {
       portfolioData: [],
     },
-  })
-    .then((data) => {
-      console.log("Deleted data", data);
-    })
-    .catch((err) => {
-      console.log(err);
-    });
+  }).catch((err) => {
+    console.log(err);
+  });
 
   if (portfolioData.length != 0) {
     let isExist = false;
     portfolioData.map((item) => {
       if (item.name == currentPortfolioItems.name) {
-        item.quantity += 1;
+        item.quantity += currentPortfolioItems.quantity;
         item.amount += currentPortfolioItems.amount;
         isExist = true;
       }
     });
-    console.log("portfolio data - 2 ", portfolioData, "isexsist : ", isExist);
 
     if (!isExist) {
-      console.log("portfolio is not empty but no similarity found");
       portfolioData.push(currentPortfolioItems);
     }
   } else {
-    console.log("portfolio is empty no user found");
     portfolioData.push(currentPortfolioItems);
   }
   User.findByIdAndUpdate(
@@ -51,10 +43,17 @@ const addToPortfolio = async (UserId, Transaction) => {
       },
     },
     { new: true, useFindAndModify: false }
-  ).catch((err) => {
-    console.log(err);
-  });
+  )
+    .then((data) => {
+      console.log("Portfolio updated ");
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 };
+
+//*--------------------------------------------------------------------------------------------*
+
 const createTransaction = async (UserId, Transaction, blockHash) => {
   await User.findByIdAndUpdate(
     UserId,
@@ -86,8 +85,8 @@ const createTransaction = async (UserId, Transaction, blockHash) => {
     },
     { new: true, useFindAndModify: false }
   )
-    .then((data) => {
-      console.log("saved transaction : ", data);
+    .then(() => {
+      console.log("Transaction saved ");
     })
     .catch((err) => {
       console.log(err);

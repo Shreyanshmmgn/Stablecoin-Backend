@@ -24,8 +24,9 @@ const userData = new schema({
     type: Date,
     default: Date.now,
   },
-
+  // Contains all the details on each transaction
   transactionData: [],
+  // Contains all the details on user's portfolio
   portfolioData: [],
 });
 // Document
