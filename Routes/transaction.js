@@ -24,7 +24,8 @@ const addToPortfolio = async (UserId, Transaction) => {
     portfolioData.map((item) => {
       if (item.name == currentPortfolioItems.name) {
         item.quantity += currentPortfolioItems.quantity;
-        item.amount += currentPortfolioItems.amount;
+        item.amount +=
+          currentPortfolioItems.amount * currentPortfolioItems.quantity;
         isExist = true;
       }
     });
